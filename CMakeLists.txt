@@ -14,10 +14,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-set(src_tests)
-add_subdirectory(src)
-message(STATUS ${src_tests})
-
+file(GLOB_RECURSE src_tests ${CMAKE_CURRENT_SOURCE_DIR}/src/*_test.cc)
 add_executable(cpp_tests ${src_tests})
 target_link_libraries(cpp_tests GTest::gtest_main)
 target_compile_options(cpp_tests PRIVATE -Wall -Wextra -Wpedantic -Wfloat-equal)
@@ -26,7 +23,6 @@ target_link_options(cpp_tests PRIVATE $<$<CONFIG:Debug>:-fsanitize=undefined,add
 
 include(GoogleTest)
 gtest_discover_tests(cpp_tests)
-
 
 set(CLANG_SEARCH_PATH "/usr/bin/" "/usr/local/bin" "$ENV{LLVM_ROOT_DIR}/bin")
 set(TOOLS_PATH "${CMAKE_SOURCE_DIR}/tools")
