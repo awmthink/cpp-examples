@@ -25,7 +25,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      # Runs a single command using the runners shell
       - name: Code static checking
         run: |
           cmake -B build -S .
@@ -33,8 +32,14 @@ jobs:
           cmake --build build --target  check-lint
           cmake --build build --target  check-clang-tidy
 
-      # Runs a set of commands using the runners shell
-      - name: Running unit tests
+      - name: Running unit tests in debug mode
         run: |
-          cmake -B build -S .
-          cmake --build build --target  test
+          cmake -B debug -S . -DCMAKE_BUILD_TYPE=Debug
+          cmake --build debug --config Debug
+          cmake --build debug --target test
+
+      - name: Running unit tests in Release mode
+        run: |
+          cmake -B release -S . -DCMAKE_BUILD_TYPE=Release
+          cmake --build release --config Release
+          cmake --build release --target test
