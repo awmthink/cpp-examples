@@ -37,7 +37,7 @@ set(TOOLS_PATH "${CMAKE_SOURCE_DIR}/tools")
 
 # clang format
 find_program(CLANG_FORMAT_BIN
-        NAMES clang-format-10
+        NAMES clang-format clang-format-10
         HINTS ${CLANG_SEARCH_PATH})
 if ("${CLANG_FORMAT_BIN}" STREQUAL "CLANG_FORMAT_BIN-NOTFOUND")
     message(WARNING "Couldn't find clang-format")
@@ -99,7 +99,7 @@ add_custom_target(check-lint echo '${LINT_FILES}' | xargs -n12 -P8
 
 # clang-tidy
 find_program(CLANG_TIDY_BIN
-        NAMES clang-tidy-10
+        NAMES clang-tidy clang-tidy-10
         HINTS ${CLANG_SEARCH_PATH})
 if ("${CLANG_TIDY_BIN}" STREQUAL "CLANG_TIDY_BIN-NOTFOUND")
     message(WARNING "Couldn't find clang-tidy")
