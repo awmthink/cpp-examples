@@ -24,6 +24,9 @@ target_link_options(cpp_tests PRIVATE $<$<CONFIG:Debug>:-fsanitize=undefined,add
 include(GoogleTest)
 gtest_discover_tests(cpp_tests)
 
+enable_testing()
+add_test(NAME cpp_tests COMMAND cpp_tests)
+
 set(CLANG_SEARCH_PATH "/usr/bin/" "/usr/local/bin" "$ENV{LLVM_ROOT_DIR}/bin")
 set(TOOLS_PATH "${CMAKE_SOURCE_DIR}/tools")
 
