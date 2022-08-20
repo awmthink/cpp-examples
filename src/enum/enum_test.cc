@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <iostream>
 
 TEST(EnumTest, TwoTypeEnumeration) {
@@ -24,8 +25,8 @@ TEST(EnumTest, TwoTypeEnumeration) {
 }
 
 TEST(EnumTest, AsignEnumerationSize) {
-  enum Color : long long { red, yellow, green };
-  enum class Peppers : short { red, yellow, green };
-  EXPECT_EQ(sizeof(long long), sizeof(Color));
-  EXPECT_EQ(sizeof(short), sizeof(Peppers));
+  enum Color : int64_t { red, yellow, green };
+  enum class Peppers : int16_t { red, yellow, green };
+  EXPECT_EQ(8, sizeof(Color));
+  EXPECT_EQ(2, sizeof(Peppers));
 }
