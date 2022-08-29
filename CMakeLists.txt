@@ -16,6 +16,7 @@ FetchContent_MakeAvailable(googletest)
 
 file(GLOB_RECURSE src_tests ${CMAKE_CURRENT_SOURCE_DIR}/src/*_test.cc)
 add_executable(cpp_tests ${src_tests})
+target_include_directories(cpp_tests PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(cpp_tests GTest::gtest_main)
 target_compile_options(cpp_tests PRIVATE -Wall -Wextra -Wpedantic -Wfloat-equal)
 target_compile_options(cpp_tests PRIVATE $<$<CONFIG:Debug>:-Os -g3 -fsanitize=undefined,address,leak>)
