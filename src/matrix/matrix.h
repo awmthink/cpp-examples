@@ -91,9 +91,8 @@ std::ostream& operator<<(std::ostream& os, const Matrix<T>& m) {
     for (int j = 0; j < m.Cols(); j++) {
       os << m.At(i, j) << " ";
     }
-    os << "\n";
+    os << (i == (m.Rows() - 1) ? '\0' : '\n');
   }
-  os << std::flush;
   return os;
 }
 

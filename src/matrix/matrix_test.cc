@@ -9,7 +9,7 @@
 
 TEST(MatrixTest, Constructor) {
   Matrix<int> m(3, 4);
-  std::cout << m;
+  std::cout << m << std::endl;
 }
 
 TEST(MatrixTest, CopyConstructor) {
@@ -28,7 +28,7 @@ TEST(MatrixTest, VectorOfMatrix) {
     // NOLINTNEXTLINE
     matrix_vec.emplace_back(3, 3);
   }
-  std::cout << matrix_vec[3];
+  std::cout << matrix_vec[3] << std::endl;
 }
 
 TEST(MatrixTest, MatrixAdd) {
