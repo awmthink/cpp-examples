@@ -3,14 +3,14 @@
 #include <gtest/gtest.h>
 
 struct Foo {
-  int a = 42;
+  int a_ = 42;
 };
 
 struct Bar : public Foo {};
 
 TEST(SmartPointerTest, UniquePointer) {
   UniquePointer<Foo> sp(new Foo);  // 指针构造函数
-  std::cout << sp->a << std::endl;
+  std::cout << sp->a_ << std::endl;
   // UniquePointer<Foo> sp4(sp);
   // //报错！在定义了移动构造函数时，默认的拷贝构造不会自动生成
   UniquePointer<Foo> sp1(std::move(sp));  // 移动构造

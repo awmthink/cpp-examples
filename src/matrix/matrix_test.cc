@@ -25,6 +25,7 @@ TEST(MatrixTest, CopyConstructor) {
 TEST(MatrixTest, VectorOfMatrix) {
   std::vector<Matrix<float>> matrix_vec;
   for (int i = 0; i < 5; i++) {
+    // NOLINTNEXTLINE
     matrix_vec.emplace_back(3, 3);
   }
   std::cout << matrix_vec[3];

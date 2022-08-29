@@ -32,7 +32,9 @@ class UniquePointer {
 
   void Swap(UniquePointer &other) { std::swap(pointer_, other.pointer_); }
 
-  T *Ptr() const { return pointer_; }
+  T *Ptr() { return pointer_; }
+
+  const T *Ptr() const { return pointer_; }
 
   UniquePointer &operator=(UniquePointer sp) noexcept {
     std::cout << "operator=(UniquePointer sp)" << std::endl;
@@ -40,9 +42,13 @@ class UniquePointer {
     return *this;
   }
 
-  T *operator->() const { return pointer_; }
+  const T *operator->() const { return pointer_; }
 
-  T &operator*() const { return *pointer_; }
+  const T &operator*() const { return *pointer_; }
+
+  T *operator->() { return pointer_; }
+
+  T &operator*() { return *pointer_; }
 
   operator bool() {
     if (pointer_ == nullptr) {

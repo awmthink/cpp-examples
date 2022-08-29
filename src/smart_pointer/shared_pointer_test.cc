@@ -3,17 +3,18 @@
 #include <gtest/gtest.h>
 
 struct Foo {
-  int a = 42;
+  int a_ = 42;
 };
 
 struct Bar : public Foo {};
 
 TEST(SmartPointerTest, SharedPointer) {
   SharedPointer<Foo> sp(new Foo);
-  std::cout << sp->a << std::endl;
+  std::cout << sp->a_ << std::endl;
 
   std::cout << "ref count: " << sp.RefCount() << std::endl;
 
+  // NOLINTNEXTLINE
   SharedPointer<Foo> sp1(sp);  // 拷贝构造
   std::cout << "ref count: " << sp.RefCount() << std::endl;
   std::cout << "sp1 ref count: " << sp1.RefCount() << std::endl;

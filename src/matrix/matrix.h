@@ -52,25 +52,24 @@ class Matrix {
     return neg;
   }
 
+  int Rows() const { return rows_; }
+
+  int Cols() const { return cols_; }
+
   T& At(int i, int j) { return data_[i * cols_ + j]; }
 
-  Matrix operator+(const Matrix& other) const {
-    Matrix sum(rows_, cols_);
+  const T& At(int i, int j) const { return data_[i * cols_ + j]; }
+
+  Matrix& operator+=(const Matrix& other) {
     for (int i = 0; i < rows_ * cols_; i++) {
-      sum.data_[i] += data_[i] + other.data_[i];
+      data_[i] += other.data_[i];
     }
-    return sum;
+    return *this;
   }
 
-  friend std::ostream& operator<<(std::ostream& os, const Matrix& m) {
-    for (int i = 0; i < m.rows_; i++) {
-      for (int j = 0; j < m.cols_; j++) {
-        os << m.data_[i * m.cols_ + j] << " ";
-      }
-      os << "\n";
-    }
-    os << std::flush;
-    return os;
+  Matrix operator+(const Matrix& other) const {
+    Matrix sum(*this);
+    return sum += other;
   }
 
   ~Matrix() {
@@ -85,5 +84,32 @@ class Matrix {
   T* data_ = nullptr;
   bool own_data_ = true;
 };
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const Matrix<T>& m) {
+  for (int i = 0; i < m.Rows(); i++) {
+    for (int j = 0; j < m.Cols(); j++) {
+      os << m.At(i, j) << " ";
+    }
+    os << "\n";
+  }
+  os << std::flush;
+  return os;
+}
+
+template <typename T>
+bool operator==(const Matrix<T>& lhs, const Matrix<T>& rhs) {
+  if (lhs.Rows() != rhs.Rows() || lhs.Cols() != rhs.Cols()) {
+    return false;
+  }
+  for (int i = 0; i < lhs.Rows(); i++) {
+    for (int j = 0; j < lhs.Cols(); j++) {
+      if (lhs.At(i, j) != rhs.At(i, j)) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
 
 #endif  // SRC_MATRIX_MATRIX_H_

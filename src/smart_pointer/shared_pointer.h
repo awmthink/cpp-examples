@@ -49,7 +49,9 @@ class SharedPointer {
     std::swap(ref_count_, other.ref_count_);
   }
 
-  T *Ptr() const { return pointer_; }
+  T *Ptr() { return pointer_; }
+
+  const T *Ptr() const { return pointer_; }
 
   unsigned int RefCount() const {
     if (ref_count_ != nullptr) {
@@ -64,9 +66,13 @@ class SharedPointer {
     return *this;
   }
 
-  T *operator->() const { return pointer_; }
+  const T *operator->() const { return pointer_; }
 
-  T &operator*() const { return *pointer_; }
+  const T &operator*() const { return *pointer_; }
+
+  T *operator->() { return pointer_; }
+
+  T &operator*() { return *pointer_; }
 
   SharedPointer &operator++() {
     pointer_++;
