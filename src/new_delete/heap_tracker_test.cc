@@ -4,16 +4,16 @@
 
 TEST(NewDeleteTest, HeapTrackerTest) {
   class Bar {
-    int a = 0;
-    bool b = true;
+    int a_ = 0;
+    bool b_ = true;
 
    public:
-    virtual void f() {}
+    virtual void Fun() { std::cout << a_ << b_ << std::endl; }
   };
   // 这里写多重继承，是为了验证基类this指针了派生类的地址不同的问题
   class Foo : public Bar, public HeapTracker {
    public:
-    void f() override {}
+    void Fun() override {}
   };
   auto *f = new Foo();
   std::cout << "derived ptr: " << f << std::endl;

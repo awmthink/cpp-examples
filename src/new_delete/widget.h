@@ -2,7 +2,9 @@
 #define SRC_NEW_DELETE_WIDGET_H_
 
 #include <cstddef>
+#include <cstdint>
 #include <iostream>
+#include <string>
 
 void *operator new(std::size_t size) {
   if (size == 0) {
@@ -55,14 +57,14 @@ class Widget {
   }
 
   static void *operator new(std::size_t size, const std::string &file_name,
-                            long lineno) {
+                            uint64_t lineno) {
     std::cout << file_name << ":" << lineno
               << " [Widget] placement operator new(nothrow)" << std::endl;
     return ::operator new(size);
   }
 
   static void operator delete(void *ptr, const std::string &file_name,
-                              long lineno) noexcept {
+                              uint64_t lineno) noexcept {
     std::cout << file_name << ":" << lineno
               << " [Widget] placement operator delete(nothrow)" << std::endl;
     ::operator delete(ptr);
