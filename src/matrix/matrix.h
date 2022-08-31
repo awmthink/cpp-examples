@@ -1,8 +1,12 @@
 #ifndef SRC_MATRIX_MATRIX_H_
 #define SRC_MATRIX_MATRIX_H_
 
+#include <algorithm>
 #include <iostream>
 #include <utility>
+
+template <typename T>
+class Vector;
 
 template <typename T>
 class Matrix {
@@ -45,9 +49,9 @@ class Matrix {
   }
 
   Matrix operator-() const {
-    Matrix neg(*this);
+    Matrix neg(rows_, cols_);
     for (int i = 0; i < rows_ * cols_; i++) {
-      neg.data_[i] = -neg.data_[i];
+      neg.data_[i] = -data_[i];
     }
     return neg;
   }
@@ -67,10 +71,46 @@ class Matrix {
     return *this;
   }
 
+  Matrix& operator-=(const Matrix& other) {
+    for (int i = 0; i < rows_ * cols_; i++) {
+      data_[i] -= other.data_[i];
+    }
+    return *this;
+  }
+
   Matrix operator+(const Matrix& other) const {
     Matrix sum(*this);
     return sum += other;
   }
+
+  Matrix operator-(const Matrix& other) const {
+    Matrix sum(*this);
+    return sum -= other;
+  }
+
+  Vector<T> operator[](int i) { return Vector<T>{cols_, data_ + i * cols_}; }
+
+  const Vector<T> operator[](int i) const {
+    return Vector<T>{cols_, data_[i * cols_]};
+  }
+
+  void Reshape(int r, int c) {
+    if (r == -1) {
+      r = rows_ * cols_ / c;
+    }
+    if (c == -1) {
+      c = rows_ * cols_ / r;
+    }
+    if (r * c != rows_ * cols_) {
+      throw std::invalid_argument("r * c != rows_ * cols_");
+    }
+    rows_ = r;
+    cols_ = c;
+  }
+
+  T* Data() { return data_; }
+
+  const T* Data() const { return data_; }
 
   ~Matrix() {
     if (own_data_) {
@@ -78,7 +118,7 @@ class Matrix {
     }
   }
 
- private:
+ protected:
   int rows_ = 0;
   int cols_ = 0;
   T* data_ = nullptr;
@@ -110,5 +150,21 @@ bool operator==(const Matrix<T>& lhs, const Matrix<T>& rhs) {
   }
   return true;
 }
+
+template <typename T>
+class Vector : public Matrix<T> {
+ public:
+  explicit Vector(int size) : Matrix<T>(1, size) {}
+
+  Vector(int size, T* ext_data) : Matrix<T>(1, size, ext_data) {}
+
+  Vector(const std::initializer_list<T>& il) : Vector(il.size()) {
+    std::copy(il.begin(), il.end(), this->data_);
+  }
+
+  T& operator[](int i) { return this->data_[i]; }
+
+  const T& operator[](int i) const { return this->data_[i]; }
+};
 
 #endif  // SRC_MATRIX_MATRIX_H_

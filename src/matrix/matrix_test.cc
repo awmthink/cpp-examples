@@ -60,3 +60,17 @@ TEST(MatrixTest, NegativeMatrix) {
   m.At(1, 1) = 2;
   std::cout << -m << std::endl;
 }
+
+TEST(MatrixTest, VectorTest) {
+  Vector<int> vi = {1, 2, 3, 4};
+  std::cout << vi << std::endl;
+  vi[2] = 5;
+  vi.Reshape(-1, 1);
+  std::cout << vi << std::endl;
+
+  Matrix<int> m{3, 4};
+  m[0][0] = 1;
+  m[1][1] = 2;
+  m[2][2] = 3;
+  std::cout << m << std::endl;
+}
