@@ -92,14 +92,16 @@ void operator delete(void *ptr) noexcept {
 
 讲到这里，你应该已经明白`operator new/new[]/delete/delete[]`的重载与其它重载运算符的不同之处。如果我们显式地调用`::operator new(N)`，其实就是在分配`N bytes`的内存，和我们平常写的`new`表达式并不一样。
 
-## 重载`operator new/delete`
+## 替换`operator new/delete`
 
-我们何时需要重载这些函数呢？可能是出于这些原因：
+我们何时需要替换这些函数呢？可能是出于这些原因：
 
 1. 为了记录程序对于动态内存的使用，包括记录分配和释放来检测内存泄漏，或者做一些其它统计，比如程序在运行期间分配的内存的大小分布、寿命分布、最大动态分配量等等。
 2. 为了提升效率。这些函数的默认版本采取的策略必须能够应付各种各样的内存配置需求，因此它们的效率虽然不会太差，但也并不在任何情况下有极佳的表现。因此假如你对你的程序的内存运用有着深刻的认识，你可能会发现自己定制的`operator new/delete`无论是时间上还是空间消耗上都胜过默认的版本。
 
-重载全局的`operator new/new[]/delete/delete[]`是没有问题的，比方说当我想检查程序中的内存泄漏时，我可以在这几个函数中记录内存的分配与释放。但是注意，标准库的许多容器使用的默认`allocator`都会调用全局的`::operator new`，所以在全局范围重载这些函数相当于将标准库的朋友们全都邀请到你家来做客，你要确保你的这些函数能够应付它们的需求。
+替换全局的`operator new/new[]/delete/delete[]`是没有问题的，比方说当我想检查程序中的内存泄漏时，我可以在这几个函数中记录内存的分配与释放。但是注意，标准库的许多容器使用的默认`allocator`都会调用全局的`::operator new`，所以在全局范围重载这些函数相当于将标准库的朋友们全都邀请到你家来做客，你要确保你的这些函数能够应付它们的需求。
+
+## 类别定制的版本
 
 很多时候，我们可能只是想为我们自己定义的class提供特殊的内存配置方式，并不想惊扰其他人。这时我们可以为class提供一个`static`版本的`operator new/new[]/delete/delete[]`重载。例如：
 
@@ -113,6 +115,8 @@ class Widget {
 }
 ```
 当我们使用new来创建一个`Widget`类型的对象时，这个`Widget::operator new`将会成为比全局的`::operator new`更好的匹配；`delete`也是如此。
+
+## Placement new/delete
 
 除了这些只接受一个`size`参数的`operator new`和只接受一个`void *`参数的`operator delete`之外，C++还允许定义这些函数的带有额外参数的版本，称为“placement-new/delete”。标准库已经为我们定义好了两个著名的placement版本：
 
@@ -140,7 +144,7 @@ auto ptr = new (std::nothrow) T{Args};
 ```c++
 new(ptr) T{Args};
 ```
-注意，这个接受地址参数的placement-new不可以自定义。
+注意，这个接受地址参数的placement-new不可以替换的。
 
 此外，我们还可以自定义携带其它参数的placement new/delete，例如记录发出内存分配请求的行号、文件名。
 
