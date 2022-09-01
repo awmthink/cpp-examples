@@ -167,7 +167,7 @@ class Array {
 
 1. **Nothrow guarantee**：函数使用`nothrow`承诺不抛出异常
 2. **Strong guarantee**：承诺当异常发生时，整个程序的状态未发生改变，保持和抛出异常前一致，就好像函数未被调用过一样。
-3. **Weak guarantee***：承诺如果一个异常被抛出时，程序中的所有对象保持一个有效的状态：1）没有破损的对象；2）保持一致性。
+3. **Weak guarantee**：承诺如果一个异常被抛出时，程序中的所有对象保持一个有效的状态：1）没有破损的对象；2）保持一致性。
 
 > Effective C++ Item 29: A software system is either exception-safe or it’s not. There’s no such thing as a partially exception- safe system. If a system has even a single function that’s not exception-safe, the system as a whole is not exception-safe. <br>  A function can usually offer a guarantee no stronger than the weakest guarantee of the functions it calls.
 
@@ -381,6 +381,7 @@ C++ 的标准容器在大部分情况下提供了强异常保证，即：一旦�
 
 ## 扩展阅读
 
+* [使用契约的思想来解决程序异常处理](https://blog.csdn.net/myan/article/details/1921)
 * [C++FAQ: Excetpions and Error Handling](https://isocpp.org/wiki/faq/exceptions)
 * [标准库中的所有异常类型](https://zh.cppreference.com/w/cpp/error/exception)
 * [C++异常与代替品](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1947r0.pdf)
