@@ -6,37 +6,37 @@
 #include <iostream>
 #include <string>
 
-void *operator new(std::size_t size) {
-  if (size == 0) {
-    size = 1;
-  }
-  std::cout << "overload golbal operator new" << std::endl;
-  return std::malloc(size);
-}
-void *operator new[](std::size_t size) {
-  if (size == 0) {
-    size = 1;
-  }
-  std::cout << "overload golbal operator new[]" << std::endl;
-  return std::malloc(size);
-}
-void operator delete(void *ptr) {
-  std::cout << "overload golbal operator delete" << std::endl;
-  std::free(ptr);
-}
-void operator delete[](void *ptr) {
-  std::cout << "overload golbal operator delete" << std::endl;
-  std::free(ptr);
-}
+// void *operator new(std::size_t size) {
+//   if (size == 0) {
+//     size = 1;
+//   }
+//   std::cout << "overload golbal operator new" << std::endl;
+//   return std::malloc(size);
+// }
+// void *operator new[](std::size_t size) {
+//   if (size == 0) {
+//     size = 1;
+//   }
+//   std::cout << "overload golbal operator new[]" << std::endl;
+//   return std::malloc(size);
+// }
+// void operator delete(void *ptr) {
+//   std::cout << "overload golbal operator delete" << std::endl;
+//   std::free(ptr);
+// }
+// void operator delete[](void *ptr) {
+//   std::cout << "overload golbal operator delete" << std::endl;
+//   std::free(ptr);
+// }
 
-void operator delete(void *ptr, std::size_t size) {
-  std::cout << "overload golbal sized-operator delete: " << size << std::endl;
-  std::free(ptr);
-}
-void operator delete[](void *ptr, std::size_t size) {
-  std::cout << "overload golbal sized-operator delete :" << size << std::endl;
-  std::free(ptr);
-}
+// void operator delete(void *ptr, std::size_t size) {
+//   std::cout << "overload golbal sized-operator delete: " << size <<
+//   std::endl; std::free(ptr);
+// }
+// void operator delete[](void *ptr, std::size_t size) {
+//   std::cout << "overload golbal sized-operator delete :" << size <<
+//   std::endl; std::free(ptr);
+// }
 
 class Widget {
  public:

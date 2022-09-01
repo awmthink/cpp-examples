@@ -22,6 +22,8 @@ target_compile_options(cpp_tests PRIVATE -Wall -Wextra -Wpedantic -Wfloat-equal)
 target_compile_options(cpp_tests PRIVATE $<$<CONFIG:Debug>:-Os -g3 -fsanitize=undefined,address,leak>)
 target_link_options(cpp_tests PRIVATE $<$<CONFIG:Debug>:-fsanitize=undefined,address,leak>)
 
+add_executable(playground ${CMAKE_SOURCE_DIR}/playground/main.cc)
+
 include(GoogleTest)
 gtest_discover_tests(cpp_tests)
 
@@ -116,3 +118,7 @@ add_custom_target(check-clang-tidy
         -p ${CMAKE_BINARY_DIR}
         )
 add_dependencies(check-clang-tidy cpp_tests)
+
+add_custom_target(check-all)
+add_dependencies(check-all check-format check-lint check-clang-tidy)
+
