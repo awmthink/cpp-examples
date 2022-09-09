@@ -113,6 +113,81 @@ result += ".";
 
 在C++11之前，返回一个本地对象意味着这个对象会被拷贝，除非编译器发现可以做返回值优化（named return value optimization，或NRVO），能把对象直接构造到调用者的栈上。从C++11开始，返回值优化仍可以发生，但在没有返回值优化的情况下，编译器将试图把本地对象移动出去，而不是拷贝出去。这一行为不需要程序员手工用`std::move`进行干预——使用 `std::move`对于移动行为没有帮助，反而会影响返回值优化。
 
+示例一：通过一个右值引用绑定到一个函数返回的临时对象上，右值引用延长了临时对象的生命周期。
+
+```c++
+std::vector<int> return_vector(void)
+{
+  std::vector<int> tmp {1,2,3,4,5};
+  return tmp;
+}
+std::vector<int> &&rval_ref = return_vector();
+// 等价于 const std::vector<int>& rval_ref = return_vector();
+```
+
+示例二：这个一个错误的代码，会导致运行时错误，`rval_ref`绑定到了一个已经销毁的`tmp`对象上。任何时候不要返回一个局部对象的引用，即使是右值引用，它本质上还是一个左值。
+
+```c++
+std::vector<int>&& return_vector(void)
+{
+  std::vector<int> tmp {1,2,3,4,5};
+  return std::move(tmp);
+}
+
+std::vector<int> &&rval_ref = return_vector();
+```
+
+示例三：显式在函数内的使用`std::move`来触发一次移动构造，创建一个临时对象，外部再用一个右值引用来延长临时对象的生命周期。
+
+```c++
+std::vector<int> return_vector(void)
+{
+  std::vector<int> tmp {1,2,3,4,5};
+  return std::move(tmp);
+}
+
+std::vector<int> &&rval_ref = return_vector();
+```
+
+示例四：最佳实践，利用编译器的返回值优化（`NVRO`），或者移动构造。
+
+```c++
+std::vector<int> return_vector(void)
+{
+    std::vector<int> tmp {1,2,3,4,5};
+    return tmp;
+}
+
+std::vector<int> rval_ref = return_vector();
+```
+
+## 强制复制消除
+
+```c++
+class A{};
+A GetUnnamed() { return A(); }
+A GetNamed() {
+  A a;
+  return a;
+}
+A GetMovedA() {
+  A a1, a2;
+  if (rand() > 42) {
+    return a1;
+  }
+  return a2;
+}
+A GetRefA() {
+	A a1, a2;
+	return (rand() > 42 ? a1 : a2);
+}
+A a = Fun();
+A a = A(Fun());
+```
+对于`GetUnnamed`和`GetNamed`，在C++17之前，编译器可能通过`RVO`和`NRVO`来避免返回临时对象时的开销，而是把临时对象直接构造到初始化变量上。对于`GetMovedA`在C++11之前还没有移动语义时，需要触发一次默认构造和一次拷贝构造，而在C++11后，就只需要一次默认构造加上一次移动了。`GetRefA`就不会触发移动，而是使用拷贝，因为`?:`表达式的类型是一个左值引用，如果要移动，就要显式的调用`std::move`了。
+
+疑问？这里
+
 ## 引用坍缩问题
 
 这个事情基本发生成一个类似于代理的场景下：我们最终调用是`foo`，但是很多时候，我们调用是`bar`，让`bar`里面去执行`foo`，`foo`在这里这有点像`python`的装饰器函数。
