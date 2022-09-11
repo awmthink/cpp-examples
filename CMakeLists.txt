@@ -14,10 +14,18 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
+include(FetchContent)
+FetchContent_Declare(
+  spdlog
+  GIT_REPOSITORY https://github.com/gabime/spdlog.git
+  GIT_TAG v1.10.0
+)
+FetchContent_MakeAvailable(spdlog)
+
 file(GLOB_RECURSE src_tests ${CMAKE_CURRENT_SOURCE_DIR}/src/*_test.cc)
 add_executable(cpp_tests ${src_tests})
 target_include_directories(cpp_tests PRIVATE ${CMAKE_SOURCE_DIR}/src)
-target_link_libraries(cpp_tests GTest::gtest_main)
+target_link_libraries(cpp_tests GTest::gtest_main spdlog::spdlog)
 target_compile_options(cpp_tests PRIVATE -Wall -Wextra -Wpedantic -Wfloat-equal)
 target_compile_options(cpp_tests PRIVATE $<$<CONFIG:Debug>:-Os -g3 -fsanitize=undefined,address,leak>)
 target_link_options(cpp_tests PRIVATE $<$<CONFIG:Debug>:-fsanitize=undefined,address,leak>)
