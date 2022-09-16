@@ -8,6 +8,7 @@ class Foo {
   double d_ = .0;
 
  public:
+  // NOLINTNEXTLINE
   virtual void Fun(int x) {
     i_ = x;
     std::cout << "Foo:Fun(int): " << x << std::endl;
@@ -17,19 +18,27 @@ class Foo {
     d_ = x;
     std::cout << "Foo:Fun(double): " << x << std::endl;
   }
+
+  void NonVirtualFun(int x) {
+    i_ = x;
+    std::cout << "Foo:NonVirtualFun(int): " << x << std::endl;
+  }
+
   virtual ~Foo() = default;
 };
 class Bar : public Foo {
  public:
-  // overriding：虚函数重写
-  void Fun(int x) override {
-    i_ = x;
-    std::cout << "Bar:Fun: " << x << std::endl;
-  }
   // hiding: 隐藏了父类的实现
+  // NOLINTNEXTLINE
   void Fun(double x) {
     d_ = x;
     std::cout << "Bar:Fun(double): " << x << std::endl;
+  }
+
+  // 隐藏父类中的所有同名函数，即使参数不同
+  void NonVirtualFun(double d) {
+    d_ = d;
+    std::cout << "Foo:NonVirtualFun(double): " << d << std::endl;
   }
 };
 

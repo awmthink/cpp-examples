@@ -405,3 +405,4 @@ This extra housekeeping slows down execution, but a clever compiler implementati
 * [标准库中的所有异常类型](https://zh.cppreference.com/w/cpp/error/exception)
 * [C++异常与代替品](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1947r0.pdf)
 * [异常的开销](https://learn.saylor.org/mod/book/view.php?id=33103&chapterid=13311)
+* [C++异常机制的实现与开销](http://baiy.cn/doc/cpp/inside_exception.htm)

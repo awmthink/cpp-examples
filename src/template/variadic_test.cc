@@ -29,3 +29,25 @@ TEST(TemplateTest, VariadicTest) {
   PrintBetter(a, pi, str, p);
   std::cout << std::endl;
 }
+
+template <typename... T>
+auto FoldSum(T... s) {
+  return (... + s);  // 括号里是一个折叠表达式
+}
+
+// 利用折叠表达式的版本
+template <typename... Args>
+void FoldPrint(Args const &... args) {
+  (std::cout << ... << args) << "\n";
+}
+
+template <typename FirstType, typename... Args>
+void FoldPrint(FirstType first, Args... args) {
+  std::cout << first;
+
+  auto print_white_space = [](const auto arg) { std::cout << " " << arg; };
+
+  (..., print_white_space(args));
+}
+
+TEST(TemplateTest, FoldExpressions) { EXPECT_EQ(10, FoldSum(1, 2, 3, 4)); }
