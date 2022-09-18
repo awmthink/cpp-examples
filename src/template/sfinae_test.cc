@@ -30,7 +30,7 @@ struct HasReserve {
   struct SFINAE {};
 
   template <class U>
-  static Good Reserve(SFINAE<U, &U::Reserve>*);
+  static Good Reserve(SFINAE<U, &U::Reserve> *);
 
   template <class U>
   static Bad Reserve(...);
