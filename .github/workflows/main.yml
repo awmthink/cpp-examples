@@ -29,7 +29,6 @@ jobs:
         run: |
           cmake -B build -S .
           cmake --build build --target  check-format
-          cmake --build build --target  check-lint
           cmake --build build --target  check-clang-tidy
 
       - name: Running unit tests in debug mode

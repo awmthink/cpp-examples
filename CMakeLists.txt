@@ -22,15 +22,17 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(spdlog)
 
+find_package(Threads REQUIRED)
+
 file(GLOB_RECURSE src_tests ${CMAKE_CURRENT_SOURCE_DIR}/src/*_test.cc)
 add_executable(cpp_tests ${src_tests})
 target_include_directories(cpp_tests PRIVATE ${CMAKE_SOURCE_DIR}/src)
-target_link_libraries(cpp_tests GTest::gtest_main spdlog::spdlog)
+target_link_libraries(cpp_tests GTest::gtest_main spdlog::spdlog ${CMAKE_THREAD_LIBS_INIT})
 target_compile_options(cpp_tests PRIVATE -Wall -Wextra -Wpedantic -Wfloat-equal)
 target_compile_options(cpp_tests PRIVATE $<$<CONFIG:Debug>:-Os -g3 -fsanitize=undefined,address,leak>)
 target_link_options(cpp_tests PRIVATE $<$<CONFIG:Debug>:-fsanitize=undefined,address,leak>)
 
-add_executable(playground ${CMAKE_SOURCE_DIR}/playground/main.cc)
+add_subdirectory(playground)
 
 include(GoogleTest)
 gtest_discover_tests(cpp_tests)
@@ -48,7 +50,7 @@ set(TOOLS_PATH "${CMAKE_SOURCE_DIR}/tools")
 
 # clang format
 find_program(CLANG_FORMAT_BIN
-        NAMES clang-format-10
+        NAMES clang-format-10 clang-format
         HINTS ${CLANG_SEARCH_PATH})
 if ("${CLANG_FORMAT_BIN}" STREQUAL "CLANG_FORMAT_BIN-NOTFOUND")
     message(WARNING "Couldn't find clang-format")
@@ -76,41 +78,13 @@ add_custom_target(check-format ${TOOLS_PATH}/run_clang_format.py
         --quiet
 )
 
-##########################################
-# "make check-lint"
-##########################################
-
-# cpplint
-find_program(CPPLINT_BIN
-        NAMES cpplint cpplint.py
-        HINTS "${TOOLS_PATH}")
-if ("${CPPLINT_BIN}" STREQUAL "CPPLINT_BIN-NOTFOUND")
-    message(WARNING "Couldn't find cpplint.")
-else()
-    message(STATUS "Found cpplint at ${CPPLINT_BIN}")
-endif()
-
-file(GLOB_RECURSE LINT_FILES
-        "${CMAKE_SOURCE_DIR}/src/*.h"
-        "${CMAKE_SOURCE_DIR}/src/*.cc"
-)
-
-# Balancing act: cpplint.py takes a non-trivial time to launch,
-# so process 12 files per invocation, while still ensuring parallelism
-add_custom_target(check-lint echo '${LINT_FILES}' | xargs -n12 -P8
-        ${CPPLINT_BIN}
-        --verbose=2 --quiet
-        --linelength=120
-        --filter=-legal/copyright,-build/header_guard,-runtime/int
-        )
-
 ###########################################################
 # "make check-clang-tidy" target
 ###########################################################
 
 # clang-tidy
 find_program(CLANG_TIDY_BIN
-        NAMES clang-tidy-10
+        NAMES clang-tidy-10 clang-tidy
         HINTS ${CLANG_SEARCH_PATH})
 if ("${CLANG_TIDY_BIN}" STREQUAL "CLANG_TIDY_BIN-NOTFOUND")
     message(WARNING "Couldn't find clang-tidy")
@@ -128,5 +102,5 @@ add_custom_target(check-clang-tidy
 add_dependencies(check-clang-tidy cpp_tests)
 
 add_custom_target(check-all)
-add_dependencies(check-all check-format check-lint check-clang-tidy)
+add_dependencies(check-all check-format check-clang-tidy)
 

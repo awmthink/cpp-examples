@@ -1,0 +1,6 @@
+#ifndef CPP_EXAMPLES_PLAYGROUND_LIB_H_
+#define CPP_EXAMPLES_PLAYGROUND_LIB_H_
+
+void hello();
+
+#endif  // CPP_EXAMPLES_PLAYGROUND_LIB_H_
