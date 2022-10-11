@@ -214,14 +214,14 @@ void Variable::ZeroGradient() {
   }
 }
 
-void Variable::Backpropagation() {
+static std::vector<Variable> TopoSort(Variable root) {
   std::queue<Variable> q;
-  q.push(*this);
+  q.push(root);
   std::vector<Variable> sorted_vec;
   while (!q.empty()) {
     auto ref = q.front();
-    for (auto& input : ref.variable_->inputs_) {
-      q.push(input);
+    for (std::size_t i = 0; i < ref.NumInputs(); ++i) {
+      q.push(ref.Inputs(i));
     }
     auto iter = std::find(sorted_vec.begin(), sorted_vec.end(), ref);
     if (iter != sorted_vec.end()) {
@@ -230,6 +230,11 @@ void Variable::Backpropagation() {
     sorted_vec.push_back(ref);
     q.pop();
   }
+  return sorted_vec;
+}
+
+void Variable::Backpropagation() {
+  std::vector<Variable> sorted_vec = TopoSort(*this);
   // for (auto& ref : sorted_vec) {
   //   std::cout << ref.Name() << ", ";
   // }
