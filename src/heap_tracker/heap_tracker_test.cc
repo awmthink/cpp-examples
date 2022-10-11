@@ -1,4 +1,4 @@
-#include "new_delete/heap_tracker.h"
+#include "heap_tracker/heap_tracker.h"
 
 #include <gtest/gtest.h>
 
