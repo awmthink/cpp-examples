@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 
 TEST(AutoDiff, UnaryOperators) {
-  auto v0 = ad::VariableRef::MakeVariableRef(2);
+  auto v0 = ad::Variable{2};
   auto v1 = v0.Sin();
   auto v2 = v1.Log();
   auto v3 = -v2;
@@ -13,8 +13,8 @@ TEST(AutoDiff, UnaryOperators) {
 }
 
 TEST(AutoDiff, BinaryOperators) {
-  auto v0 = ad::VariableRef::MakeVariableRef(2);
-  auto v1 = ad::VariableRef::MakeVariableRef(5);
+  auto v0 = ad::Variable{2};
+  auto v1 = ad::Variable{5};
   auto v2 = v0.Log();
   auto v3 = v0 * v1;
   auto v4 = v1.Sin();
@@ -28,8 +28,8 @@ TEST(AutoDiff, BinaryOperators) {
 }
 
 TEST(AutoDiff, ComposeOperators) {
-  auto v0 = ad::VariableRef::MakeVariableRef(2);
-  auto v1 = ad::VariableRef::MakeVariableRef(5);
+  auto v0 = ad::Variable{2};
+  auto v1 = ad::Variable{5};
 
   auto v2 = v0.Log();
   auto v3 = v0 * v1;
@@ -41,14 +41,14 @@ TEST(AutoDiff, ComposeOperators) {
   auto v7 = v0.Log() + v0 * v1 - v1.Sin();
   EXPECT_FLOAT_EQ(v6.Value(), v7.Value());
 
-  ad::VariableRef::ZeroGradient();
+  ad::Variable::ZeroGradient();
   v7.Backpropagation();
   EXPECT_FLOAT_EQ(v6.GetAdjoint().Value(), v7.GetAdjoint().Value());
 }
 
 TEST(AutoDiff, MultiPath) {
-  auto v0 = ad::VariableRef::MakeVariableRef(2);
-  auto v1 = ad::VariableRef::MakeVariableRef(5);
+  auto v0 = ad::Variable{2};
+  auto v1 = ad::Variable{5};
 
   auto v2 = v0.Log() * v1;  // 1/v0 * v1,  v0.log
   auto v3 = v0.Sin() - v1;  // vo.cos, -1
@@ -61,6 +61,6 @@ TEST(AutoDiff, MultiPath) {
 }
 
 TEST(AutoDiff, GetAdjoint) {
-  auto v = ad::VariableRef::MakeVariableRef(2);
+  auto v = ad::Variable{2};
   EXPECT_ANY_THROW(v.GetAdjoint());
 }
