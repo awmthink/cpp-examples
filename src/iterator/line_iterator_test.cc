@@ -25,5 +25,6 @@ TEST(IteratorTest, LineIteratorMultiBegin) {
 TEST(IteratorTest, CopyToOstream) {
   std::istringstream iss("first line\nsecond line\nthird line");
   LineReader reader(iss);
-  std::copy(reader.begin(), reader.end(), std::ostream_iterator<std::string>(std::cout, "\n"));
+  std::copy(reader.begin(), reader.end(),
+            std::ostream_iterator<std::string>(std::cout, "\n"));
 }

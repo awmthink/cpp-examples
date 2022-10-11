@@ -88,8 +88,8 @@ class OpBase {
  public:
   OpBase(const char* name) : op_name_(name) {}
   virtual float Compute(std::vector<VariableRef>& inputs) const = 0;
-  virtual std::vector<VariableRef> Gradient(const std::vector<VariableRef> inputs,
-                                            VariableRef out_adjoint) const = 0;
+  virtual std::vector<VariableRef> Gradient(
+      const std::vector<VariableRef> inputs, VariableRef out_adjoint) const = 0;
   std::string GetName() const { return op_name_; };
   virtual ~OpBase() = default;
 
@@ -195,10 +195,11 @@ void VariableRef::PrintAllVariableRefs() {
     if (ref.NumInputs() == 0) {
       std::cout << std::endl;
     } else if (ref.NumInputs() == 1) {
-      std::cout << ": " << ref.Op()->GetName() << ref.Inputs(0).Name() << std::endl;
-    } else if (ref.NumInputs() == 2) {
-      std::cout << ": " << ref.Inputs(0).Name() << ref.Op()->GetName() << ref.Inputs(1).Name()
+      std::cout << ": " << ref.Op()->GetName() << ref.Inputs(0).Name()
                 << std::endl;
+    } else if (ref.NumInputs() == 2) {
+      std::cout << ": " << ref.Inputs(0).Name() << ref.Op()->GetName()
+                << ref.Inputs(1).Name() << std::endl;
     }
   }
 }
@@ -234,18 +235,21 @@ void VariableRef::Backpropagation() {
     if (all_refs[i].variable_->adjoint_vec_.empty()) {
       all_refs[i].variable_->adjoint_vec_.push_back(MakeVariableRef(1));
     }
-    all_refs[i].variable_->adjoint_ = all_refs[i].variable_->adjoint_vec_.front();
-    for (std::size_t j = 1; j < all_refs[i].variable_->adjoint_vec_.size(); ++j) {
-      all_refs[i].variable_->adjoint_ =
-          all_refs[i].variable_->adjoint_ + all_refs[i].variable_->adjoint_vec_[j];
+    all_refs[i].variable_->adjoint_ =
+        all_refs[i].variable_->adjoint_vec_.front();
+    for (std::size_t j = 1; j < all_refs[i].variable_->adjoint_vec_.size();
+         ++j) {
+      all_refs[i].variable_->adjoint_ = all_refs[i].variable_->adjoint_ +
+                                        all_refs[i].variable_->adjoint_vec_[j];
     }
     if (all_refs[i].Op() == nullptr) {
       continue;
     }
-    auto gradients =
-        all_refs[i].Op()->Gradient(all_refs[i].variable_->inputs_, all_refs[i].variable_->adjoint_);
+    auto gradients = all_refs[i].Op()->Gradient(
+        all_refs[i].variable_->inputs_, all_refs[i].variable_->adjoint_);
     for (std::size_t j = 0; j < gradients.size(); ++j) {
-      all_refs[i].variable_->inputs_[j].variable_->adjoint_vec_.push_back(gradients[j]);
+      all_refs[i].variable_->inputs_[j].variable_->adjoint_vec_.push_back(
+          gradients[j]);
     }
   }
 }
@@ -335,11 +339,15 @@ float VariableRef::Value() {
 
 std::string VariableRef::Name() const { return variable_->name_; }
 
-VariableRef& VariableRef::Inputs(std::size_t i) { return variable_->inputs_[i]; }
+VariableRef& VariableRef::Inputs(std::size_t i) {
+  return variable_->inputs_[i];
+}
 
 std::size_t VariableRef::NumInputs() const { return variable_->inputs_.size(); }
 
-const VariableRef& VariableRef::Inputs(std::size_t i) const { return variable_->inputs_[i]; }
+const VariableRef& VariableRef::Inputs(std::size_t i) const {
+  return variable_->inputs_[i];
+}
 
 std::shared_ptr<OpBase> VariableRef::Op() { return variable_->op_; }
 
@@ -373,8 +381,8 @@ float MinusOp::Compute(std::vector<VariableRef>& inputs) const {
   return inputs[0].Value() - inputs[1].Value();
 }
 
-std::vector<VariableRef> MinusOp::Gradient(const std::vector<VariableRef> inputs,
-                                           VariableRef out_adjoint) const {
+std::vector<VariableRef> MinusOp::Gradient(
+    const std::vector<VariableRef> inputs, VariableRef out_adjoint) const {
   UNUSED(inputs);
   return {out_adjoint, -out_adjoint};
 }
@@ -383,8 +391,8 @@ float MultipleOp::Compute(std::vector<VariableRef>& inputs) const {
   return inputs[0].Value() * inputs[1].Value();
 }
 
-std::vector<VariableRef> MultipleOp::Gradient(const std::vector<VariableRef> inputs,
-                                              VariableRef out_adjoint) const {
+std::vector<VariableRef> MultipleOp::Gradient(
+    const std::vector<VariableRef> inputs, VariableRef out_adjoint) const {
   return {out_adjoint * inputs[1], out_adjoint * inputs[0]};
 }
 
@@ -392,43 +400,54 @@ float DivideOp::Compute(std::vector<VariableRef>& inputs) const {
   return inputs[0].Value() / inputs[1].Value();
 }
 
-std::vector<VariableRef> DivideOp::Gradient(const std::vector<VariableRef> inputs,
-                                            VariableRef out_adjoint) const {
-  return {out_adjoint / inputs[1], -inputs[0] * out_adjoint / (inputs[1] * inputs[1])};
+std::vector<VariableRef> DivideOp::Gradient(
+    const std::vector<VariableRef> inputs, VariableRef out_adjoint) const {
+  return {out_adjoint / inputs[1],
+          -inputs[0] * out_adjoint / (inputs[1] * inputs[1])};
 }
 
-float SinOp::Compute(std::vector<VariableRef>& inputs) const { return std::sin(inputs[0].Value()); }
+float SinOp::Compute(std::vector<VariableRef>& inputs) const {
+  return std::sin(inputs[0].Value());
+}
 
 std::vector<VariableRef> SinOp::Gradient(const std::vector<VariableRef> inputs,
                                          VariableRef out_adjoint) const {
   return {out_adjoint * inputs[0].Cos()};
 }
 
-float CosOp::Compute(std::vector<VariableRef>& inputs) const { return std::cos(inputs[0].Value()); }
+float CosOp::Compute(std::vector<VariableRef>& inputs) const {
+  return std::cos(inputs[0].Value());
+}
 
 std::vector<VariableRef> CosOp::Gradient(const std::vector<VariableRef> inputs,
                                          VariableRef out_adjoint) const {
   return {out_adjoint * -inputs[0].Sin()};
 }
 
-float LogOp::Compute(std::vector<VariableRef>& inputs) const { return std::log(inputs[0].Value()); }
+float LogOp::Compute(std::vector<VariableRef>& inputs) const {
+  return std::log(inputs[0].Value());
+}
 
 std::vector<VariableRef> LogOp::Gradient(const std::vector<VariableRef> inputs,
                                          VariableRef out_adjoint) const {
   return {out_adjoint / inputs[0]};
 }
 
-float ExpOp::Compute(std::vector<VariableRef>& inputs) const { return std::exp(inputs[0].Value()); }
+float ExpOp::Compute(std::vector<VariableRef>& inputs) const {
+  return std::exp(inputs[0].Value());
+}
 
 std::vector<VariableRef> ExpOp::Gradient(const std::vector<VariableRef> inputs,
                                          VariableRef out_adjoint) const {
   return {out_adjoint * inputs[0].Exp()};
 }
 
-float Negitive::Compute(std::vector<VariableRef>& inputs) const { return -inputs[0].Value(); }
+float Negitive::Compute(std::vector<VariableRef>& inputs) const {
+  return -inputs[0].Value();
+}
 
-std::vector<VariableRef> Negitive::Gradient(const std::vector<VariableRef> inputs,
-                                            VariableRef out_adjoint) const {
+std::vector<VariableRef> Negitive::Gradient(
+    const std::vector<VariableRef> inputs, VariableRef out_adjoint) const {
   UNUSED(inputs);
   return {-out_adjoint};
 }

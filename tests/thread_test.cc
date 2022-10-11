@@ -17,7 +17,8 @@ TEST(ThreadTest, CreateThreadWithFunctionPointer) {
 
 class CounterFunctor {
  public:
-  CounterFunctor(int id, int num_iterations) : id_(id), num_iterations_(num_iterations) {}
+  CounterFunctor(int id, int num_iterations)
+      : id_(id), num_iterations_(num_iterations) {}
   void operator()() const {
     for (int i{}; i < num_iterations_; ++i) {
       std::cout << "Counter " << id_ << " has value " << i << std::endl;
@@ -52,7 +53,8 @@ TEST(ThreadTest, CreateThreadWithLambda) {
 
 class Widget {
  public:
-  Widget(int id, int num_iterations) : id_(id), num_iterations_(num_iterations) {}
+  Widget(int id, int num_iterations)
+      : id_(id), num_iterations_(num_iterations) {}
   void Counter() const {
     for (int i{}; i < num_iterations_; ++i) {
       std::cout << "Counter " << id_ << " has value " << i << std::endl;
@@ -73,7 +75,8 @@ TEST(ThreadTest, CreateThreadWithMemberFunction) {
 // 本用例说明了std::thread对象，如果没有被任何显式的join或detach
 // 则对象析构时，将会调用std::terminate
 TEST(ThreadTest, RunThreadWithoutJoinAndDetach) {
-  EXPECT_DEATH({ std::thread t{[]() { std::cout << "thread" << std::endl; }}; }, "");
+  EXPECT_DEATH({ std::thread t{[]() { std::cout << "thread" << std::endl; }}; },
+               "");
 }
 
 TEST(ThreadTest, DoubleJoinOrDetach) {
