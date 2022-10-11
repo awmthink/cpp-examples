@@ -8,8 +8,7 @@ TEST(VocabularyTests, AnyUsage) {
 
   a = 1;
   EXPECT_TRUE(a.has_value());
-  std::cout << "type: " << a.type().name()
-            << ", value: " << std::any_cast<int>(a) << std::endl;
+  std::cout << "type: " << a.type().name() << ", value: " << std::any_cast<int>(a) << std::endl;
 
   EXPECT_THROW(std::any_cast<double>(a), std::bad_any_cast);
 

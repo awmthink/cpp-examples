@@ -23,8 +23,7 @@ auto DistanceImpl(Iterator begin, Iterator end, std::input_iterator_tag) {
 }
 
 template <typename Iterator>
-auto DistanceImpl(Iterator begin, Iterator end,
-                  std::random_access_iterator_tag) {
+auto DistanceImpl(Iterator begin, Iterator end, std::random_access_iterator_tag) {
   return end - begin;
 }
 

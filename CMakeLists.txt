@@ -24,7 +24,7 @@ FetchContent_MakeAvailable(spdlog)
 
 find_package(Threads REQUIRED)
 
-file(GLOB_RECURSE src_tests ${CMAKE_CURRENT_SOURCE_DIR}/src/*_test.cc)
+file(GLOB_RECURSE src_tests ${CMAKE_CURRENT_SOURCE_DIR}/src/*_test.cc ${CMAKE_CURRENT_SOURCE_DIR}/tests/*_test.cc)
 add_executable(cpp_tests ${src_tests})
 target_include_directories(cpp_tests PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(cpp_tests GTest::gtest_main spdlog::spdlog ${CMAKE_THREAD_LIBS_INIT})
@@ -60,6 +60,7 @@ endif()
 
 string(CONCAT FORMAT_DIRS
     "${CMAKE_SOURCE_DIR}/src,"
+    "${CMAKE_SOURCE_DIR}/tests"
 )
 
 # runs clang format and updates files in place.

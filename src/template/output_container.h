@@ -17,8 +17,7 @@ inline constexpr bool is_pair_v = is_pair<T>::value;
 template <typename T>
 struct has_output_function {
   template <class U>
-  static auto output(U* ptr)
-      -> decltype(std::declval<std::ostream&>() << *ptr, std::true_type());
+  static auto output(U* ptr) -> decltype(std::declval<std::ostream&>() << *ptr, std::true_type());
   template <class U>
   static std::false_type output(...);
   static constexpr bool value = decltype(output<T>(nullptr))::value;
@@ -37,13 +36,11 @@ std::ostream& operator<<(std::ostream& os, const std::pair<T, U>& pr);
 // Element output function for containers that define a key_type and
 // have its value type as std::pair
 template <typename T, typename Cont>
-auto output_element(std::ostream& os, const T& element, const Cont&,
-                    const std::true_type)
+auto output_element(std::ostream& os, const T& element, const Cont&, const std::true_type)
     -> decltype(std::declval<typename Cont::key_type>(), os);
 // Element output function for other containers
 template <typename T, typename Cont>
-auto output_element(std::ostream& os, const T& element, const Cont&, ...)
-    -> decltype(os);
+auto output_element(std::ostream& os, const T& element, const Cont&, ...) -> decltype(os);
 
 // Main output function, enabled only if no output function already exists
 template <typename T, typename = std::enable_if_t<!has_output_function_v<T>>>
@@ -83,16 +80,14 @@ auto operator<<(std::ostream& os, const T& container)
 }
 
 template <typename T, typename Cont>
-auto output_element(std::ostream& os, const T& element, const Cont&,
-                    const std::true_type)
+auto output_element(std::ostream& os, const T& element, const Cont&, const std::true_type)
     -> decltype(std::declval<typename Cont::key_type>(), os) {
   os << element.first << " => " << element.second;
   return os;
 }
 
 template <typename T, typename Cont>
-auto output_element(std::ostream& os, const T& element, const Cont&, ...)
-    -> decltype(os) {
+auto output_element(std::ostream& os, const T& element, const Cont&, ...) -> decltype(os) {
   os << element;
   return os;
 }

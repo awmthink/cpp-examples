@@ -17,8 +17,7 @@ class Matrix {
     std::cout << "construrctor" << std::endl;
   }
 
-  Matrix(int r, int c, T* ext_data)
-      : rows_(r), cols_(c), data_(ext_data), own_data_(false) {}
+  Matrix(int r, int c, T* ext_data) : rows_(r), cols_(c), data_(ext_data), own_data_(false) {}
 
   Matrix(const Matrix& m) {
     std::cout << "copy constructor" << std::endl;
@@ -90,9 +89,7 @@ class Matrix {
 
   Vector<T> operator[](int i) { return Vector<T>{cols_, data_ + i * cols_}; }
 
-  const Vector<T> operator[](int i) const {
-    return Vector<T>{cols_, data_[i * cols_]};
-  }
+  const Vector<T> operator[](int i) const { return Vector<T>{cols_, data_[i * cols_]}; }
 
   void Reshape(int r, int c) {
     if (r == -1) {

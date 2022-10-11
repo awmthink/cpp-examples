@@ -34,8 +34,8 @@ constexpr auto GetTypeName() {
 
 template <typename T>
 void PrintTypeName(T &&arg) {
-  std::cout << "type(T): " << GetTypeName<T>() << ", type(arg)："
-            << GetTypeName<decltype(arg)>() << std::endl;
+  std::cout << "type(T): " << GetTypeName<T>() << ", type(arg)：" << GetTypeName<decltype(arg)>()
+            << std::endl;
 }
 
 TEST(ForwardTest, ForwardARValue) { Bar(Circle{}); }

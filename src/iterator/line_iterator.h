@@ -25,10 +25,7 @@ class LineReader {
 
     iterator() = default;
 
-    explicit iterator(std::istream* input_stream)
-        : input_stream_(input_stream) {
-      ++(*this);
-    }
+    explicit iterator(std::istream* input_stream) : input_stream_(input_stream) { ++(*this); }
 
     reference_type operator*() const { return line_; }
 
@@ -47,9 +44,7 @@ class LineReader {
       return tmp;
     }
 
-    bool operator==(const iterator& rhs) const {
-      return input_stream_ == rhs.input_stream_;
-    }
+    bool operator==(const iterator& rhs) const { return input_stream_ == rhs.input_stream_; }
 
     bool operator!=(const iterator& rhs) const { return !operator==(rhs); }
   };

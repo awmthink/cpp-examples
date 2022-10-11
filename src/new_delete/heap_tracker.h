@@ -23,8 +23,8 @@ class HeapTracker {
     // 可以通过dynamic_cast这种用法
     // 基类的指针不是子类对象的首地址？ 因为可能存在多重继承的问题
     auto pos = memory_tracked_.find(dynamic_cast<RawPtr>(this));
-    std::cout << "base ptr: " << this
-              << ", derived ptr: " << dynamic_cast<RawPtr>(this) << std::endl;
+    std::cout << "base ptr: " << this << ", derived ptr: " << dynamic_cast<RawPtr>(this)
+              << std::endl;
     return pos != memory_tracked_.end();
   }
 
