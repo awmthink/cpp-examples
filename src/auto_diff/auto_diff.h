@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <queue>
+#include <sstream>
 #include <vector>
 
 #define UNUSED(x) (void)(x)
@@ -34,6 +35,8 @@ class Variable {
 
   float Value();
 
+  float Value() const;
+
   std::string Name() const;
 
   Variable& Inputs(std::size_t i);
@@ -48,13 +51,17 @@ class Variable {
 
   void Backpropagation();
 
+  std::string GetTopoGraph();
+
   Variable GetAdjoint();
+
   const Variable GetAdjoint() const;
 
   bool operator==(const Variable& rhs) { return rhs.variable_ == variable_; }
 
   static void PrintAllVariablesInPool();
   static void ZeroGradient();
+  static void ClearAllVirablesInPool();
 
  private:
   Variable(VariableImpl* var);
@@ -208,13 +215,17 @@ void Variable::PrintAllVariablesInPool() {
   }
 }
 
+void Variable::ClearAllVirablesInPool() {
+  VariableImpl::variable_pool_.clear();
+}
+
 void Variable::ZeroGradient() {
   for (auto& var : VariableImpl::variable_pool_) {
     var.second->adjoint_vec_.clear();
   }
 }
-
-static std::vector<Variable> TopoSort(Variable root) {
+namespace {
+std::vector<Variable> TopoSort(Variable root) {
   std::queue<Variable> q;
   q.push(root);
   std::vector<Variable> sorted_vec;
@@ -224,6 +235,7 @@ static std::vector<Variable> TopoSort(Variable root) {
       q.push(ref.Inputs(i));
     }
     auto iter = std::find(sorted_vec.begin(), sorted_vec.end(), ref);
+    // 如果已经在前面出现了，则需要把它调整到尾声部来
     if (iter != sorted_vec.end()) {
       sorted_vec.erase(iter);
     }
@@ -233,11 +245,30 @@ static std::vector<Variable> TopoSort(Variable root) {
   return sorted_vec;
 }
 
+std::string GetNodeName(const Variable& node) {
+  if (node.Op()) {
+    return node.Name() + "[\"" + node.Name() + ": " + node.Op()->GetName() +
+           "\"]";
+  }
+  return node.Name() + "[\"" + node.Name() + ": " +
+         std::to_string(node.Value()) + "\"]";
+}
+}  // namespace
+
+std::string Variable::GetTopoGraph() {
+  std::vector<Variable> sorted_vec = TopoSort(*this);
+  std::ostringstream printer;
+  for (const auto& node : sorted_vec) {
+    for (std::size_t i = 0; i < node.NumInputs(); ++i) {
+      printer << GetNodeName(node.Inputs(i)) << " --> " << GetNodeName(node)
+              << std::endl;
+    }
+  }
+  return printer.str();
+}
+
 void Variable::Backpropagation() {
   std::vector<Variable> sorted_vec = TopoSort(*this);
-  // for (auto& ref : sorted_vec) {
-  //   std::cout << ref.Name() << ", ";
-  // }
   std::cout << std::endl;
   auto all_refs = sorted_vec;
   for (std::size_t i = 0; i < all_refs.size(); ++i) {
@@ -264,7 +295,7 @@ void Variable::Backpropagation() {
 }
 
 Variable Variable::operator+(const Variable& rhs) const {
-  auto op = std::make_shared<PlusOp>("@plus@");
+  auto op = std::make_shared<PlusOp>("plus");
   auto var_ref = Variable(.0F);
   var_ref.variable_->op_ = op;
   var_ref.variable_->inputs_.emplace_back(*this);
@@ -273,7 +304,7 @@ Variable Variable::operator+(const Variable& rhs) const {
 }
 
 Variable Variable::operator-(const Variable& rhs) const {
-  auto op = std::make_shared<MinusOp>("@minus@");
+  auto op = std::make_shared<MinusOp>("minus");
   auto var_ref = Variable(.0F);
   var_ref.variable_->op_ = op;
   var_ref.variable_->inputs_.emplace_back(*this);
@@ -282,7 +313,7 @@ Variable Variable::operator-(const Variable& rhs) const {
 }
 
 Variable Variable::operator*(const Variable& rhs) const {
-  auto op = std::make_shared<MultipleOp>("@multiple@");
+  auto op = std::make_shared<MultipleOp>("mul");
   auto var_ref = Variable(.0F);
   var_ref.variable_->op_ = op;
   var_ref.variable_->inputs_.emplace_back(*this);
@@ -291,7 +322,7 @@ Variable Variable::operator*(const Variable& rhs) const {
 }
 
 Variable Variable::operator/(const Variable& rhs) const {
-  auto op = std::make_shared<DivideOp>("@divide@");
+  auto op = std::make_shared<DivideOp>("div");
   auto var_ref = Variable(.0F);
   var_ref.variable_->op_ = op;
   var_ref.variable_->inputs_.emplace_back(*this);
@@ -300,7 +331,7 @@ Variable Variable::operator/(const Variable& rhs) const {
 }
 
 Variable Variable::operator-() const {
-  auto op = std::make_shared<Negitive>("negitive@");
+  auto op = std::make_shared<Negitive>("neg");
   auto var_ref = Variable(.0F);
   var_ref.variable_->op_ = op;
   var_ref.variable_->inputs_.emplace_back(*this);
@@ -308,7 +339,7 @@ Variable Variable::operator-() const {
 }
 
 Variable Variable::Sin() const {
-  auto op = std::make_shared<SinOp>("sin@");
+  auto op = std::make_shared<SinOp>("sin");
   auto var_ref = Variable(.0F);
   var_ref.variable_->op_ = op;
   var_ref.variable_->inputs_.emplace_back(*this);
@@ -316,7 +347,7 @@ Variable Variable::Sin() const {
 }
 
 Variable Variable::Cos() const {
-  auto op = std::make_shared<CosOp>("cos@");
+  auto op = std::make_shared<CosOp>("cos");
   auto var_ref = Variable(.0F);
   var_ref.variable_->op_ = op;
   var_ref.variable_->inputs_.emplace_back(*this);
@@ -324,7 +355,7 @@ Variable Variable::Cos() const {
 }
 
 Variable Variable::Log() const {
-  auto op = std::make_shared<LogOp>("log@");
+  auto op = std::make_shared<LogOp>("log");
   auto var_ref = Variable(.0F);
   var_ref.variable_->op_ = op;
   var_ref.variable_->inputs_.emplace_back(*this);
@@ -332,7 +363,7 @@ Variable Variable::Log() const {
 }
 
 Variable Variable::Exp() const {
-  auto op = std::make_shared<ExpOp>("exp@");
+  auto op = std::make_shared<ExpOp>("exp");
   auto var_ref = Variable(.0F);
   var_ref.variable_->op_ = op;
   var_ref.variable_->inputs_.emplace_back(*this);
@@ -345,6 +376,8 @@ float Variable::Value() {
   }
   return variable_->cached_value_;
 }
+
+float Variable::Value() const { return variable_->cached_value_; }
 
 std::string Variable::Name() const { return variable_->name_; }
 

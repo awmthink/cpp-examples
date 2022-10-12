@@ -60,7 +60,15 @@ TEST(AutoDiff, MultiPath) {
   EXPECT_FLOAT_EQ(std::log(2) - 1, v1.GetAdjoint().Value());
 }
 
-TEST(AutoDiff, GetAdjoint) {
+TEST(AutoDiff, GetTopoGraph) {
+  ad::Variable::ClearAllVirablesInPool();
+  auto v0 = ad::Variable{2};
+  auto v1 = ad::Variable{5};
+  auto v = v0.Log().Exp() + v0 * v1 - v1.Sin();
+  std::cout << v.GetTopoGraph() << std::endl;
+}
+
+TEST(AutoDiff, GetEmptyAdjoint) {
   auto v = ad::Variable{2};
   EXPECT_ANY_THROW(v.GetAdjoint());
 }
