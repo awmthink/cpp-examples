@@ -1,44 +1,12 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.22)
 project(cpp_exampels)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG release-1.12.1
-)
-FetchContent_MakeAvailable(googletest)
-
-include(FetchContent)
-FetchContent_Declare(
-  spdlog
-  GIT_REPOSITORY https://github.com/gabime/spdlog.git
-  GIT_TAG v1.10.0
-)
-FetchContent_MakeAvailable(spdlog)
-
-find_package(Threads REQUIRED)
-
-file(GLOB_RECURSE src_tests ${CMAKE_CURRENT_SOURCE_DIR}/src/*_test.cc ${CMAKE_CURRENT_SOURCE_DIR}/tests/*_test.cc)
-add_executable(cpp_tests ${src_tests})
-target_include_directories(cpp_tests PRIVATE ${CMAKE_SOURCE_DIR}/src)
-target_link_libraries(cpp_tests GTest::gtest_main spdlog::spdlog ${CMAKE_THREAD_LIBS_INIT})
-target_compile_options(cpp_tests PRIVATE -Wall -Wextra -Wpedantic -Wfloat-equal)
-target_compile_options(cpp_tests PRIVATE $<$<CONFIG:Debug>:-Os -g3 -fsanitize=undefined,address,leak>)
-target_link_options(cpp_tests PRIVATE $<$<CONFIG:Debug>:-fsanitize=undefined,address,leak>)
-
-add_subdirectory(playground)
-
-include(GoogleTest)
-gtest_discover_tests(cpp_tests)
-
-enable_testing()
-add_test(NAME cpp_tests COMMAND cpp_tests)
+add_subdirectory(examples)
+add_subdirectory(tests)
 
 set(CLANG_SEARCH_PATH "/usr/bin/" "/usr/local/bin" "$ENV{LLVM_ROOT_DIR}/bin")
 set(TOOLS_PATH "${CMAKE_SOURCE_DIR}/tools")
@@ -59,7 +27,7 @@ else()
 endif()
 
 string(CONCAT FORMAT_DIRS
-    "${CMAKE_SOURCE_DIR}/src,"
+    "${CMAKE_SOURCE_DIR}/examples,"
     "${CMAKE_SOURCE_DIR}/tests"
 )
 
@@ -100,8 +68,6 @@ add_custom_target(check-clang-tidy
         -clang-tidy-binary ${CLANG_TIDY_BIN}
         -p ${CMAKE_BINARY_DIR}
         )
-add_dependencies(check-clang-tidy cpp_tests)
 
 add_custom_target(check-all)
 add_dependencies(check-all check-format check-clang-tidy)
-
