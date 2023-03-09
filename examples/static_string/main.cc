@@ -6,4 +6,3 @@ int main() {
                    std::string_view(__FILE__).find_last_of('/'))
             << std::endl;
 }
-

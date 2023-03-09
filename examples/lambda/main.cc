@@ -28,8 +28,6 @@ decltype(auto) y_combinator(Fun&& fun) {
   return y_combinator_result<std::decay_t<Fun>>(std::forward<Fun>(fun));
 }
 
-
-
 int main() {
   // 上面的那个 F
   auto almost_fact = [](auto f, int n) -> int {

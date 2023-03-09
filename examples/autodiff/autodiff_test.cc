@@ -1,4 +1,4 @@
-#include "auto_diff/auto_diff.h"
+#include "autodiff.h"
 
 #include <gtest/gtest.h>
 

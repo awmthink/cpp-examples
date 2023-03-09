@@ -22,8 +22,6 @@ struct length {
   explicit length(double v, unit u = metre) { value = v * factors[u]; }
 };
 
-
-
 length operator+(length lhs, length rhs) {
   return length(lhs.value + rhs.value);
 }

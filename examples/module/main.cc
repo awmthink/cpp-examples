@@ -1,5 +1,5 @@
 import hello;
-int main(void) {
+int main() {
   hello::Greeter("world");
   return 0;
 }

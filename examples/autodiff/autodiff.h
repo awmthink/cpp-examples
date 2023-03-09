@@ -1,5 +1,5 @@
-#ifndef SRC_AUTO_DIFF_AUTO_DIFF_H_
-#define SRC_AUTO_DIFF_AUTO_DIFF_H_
+#ifndef EXAMPLES_AUTODIFF_AUTODIFF_H_
+#define EXAMPLES_AUTODIFF_AUTODIFF_H_
 
 #include <algorithm>
 #include <cmath>
@@ -493,4 +493,5 @@ std::vector<Variable> Negitive::Gradient(const std::vector<Variable> inputs,
 }
 
 }  // namespace ad
-#endif  // SRC_AUTO_DIFF_AUTO_DIFF_H_
+
+#endif  // EXAMPLES_AUTODIFF_AUTODIFF_H_

@@ -1,7 +1,6 @@
 #include <any>
 #include <iostream>
 
-
 int main() {
   std::any a;
   a = 1;

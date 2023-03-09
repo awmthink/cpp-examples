@@ -214,9 +214,8 @@ void* operator new[](std::size_t size, std::align_val_t align_val,
   void* ptr = alloc_mem(size, ctx, static_cast<std::size_t>(align_val));
   if (ptr) {
     return ptr;
-  } else {
-    throw std::bad_alloc();
   }
+  throw std::bad_alloc();
 }
 
 void operator delete(void* ptr, const context&) { free_mem(ptr); }
