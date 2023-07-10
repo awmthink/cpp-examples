@@ -1,45 +1,19 @@
+// sample to show std::variant usage
 #include <iostream>
-#include <span>
-#include <string_view>
-#include <vector>
+#include <variant>
 
-#include "lib.h"
+int main() {
+  std::variant<int, float> v, w;
+  v = 12;  // v contains int
+  int i = std::get<int>(v);
+  w = std::get<int>(v);
+  w = std::get<0>(v);  // same effect as the previous line
+  w = v;               // same effect as the previous line
 
-void PrintStr(std::string_view str) { std::cout << str << std::endl; }
-
-void PrintArray(std::span<int> sp) {
-  for (auto n : sp) {
-    std::cout << n << std::endl;
+  try {
+    std::get<float>(w);  // w contains int, not float: will throw
+  } catch (const std::bad_variant_access&) {
   }
-}
 
-template <typename T>
-constexpr auto GetTypeName() {
-  constexpr auto prefix = std::string_view{"[with T = "};
-  constexpr auto suffix = "]";
-  constexpr auto function = std::string_view{__PRETTY_FUNCTION__};
-
-  const auto start = function.find(prefix) + prefix.size();
-  const auto end = function.find_last_of(suffix);
-  const auto size = end - start;
-
-  return function.substr(start, size);
-}
-
-template <typename T>
-void PrintTypeName(T&& arg) {
-  std::cout << "type(T): " << GetTypeName<T>() << ", type(arg)："
-            << GetTypeName<decltype(arg)>() << std::endl;
-}
-
-template <typename T>
-void f(T&& arg) {
-  PrintTypeName(arg);
-  PrintTypeName(std::decay_t<T>(arg));
-}
-
-int main(int argc, char* argv[]) {
-  f("Hello");
   return 0;
 }
-
