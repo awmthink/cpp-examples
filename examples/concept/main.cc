@@ -8,12 +8,12 @@ concept arithmetic = std::integral<T> || std::floating_point<T>;
 
 template <typename T>
 concept hashable = requires(T t) {
-  { std::hash<T>{}(t) } -> std::convertible_to<std::size_t>;
+  { std::hash<T>{}(t) }
+  ->std::convertible_to<std::size_t>;
 };
 
 template <typename T>
-  requires std::floating_point<T>
-bool IsPowerOf2(T x) {
+requires std::floating_point<T> bool IsPowerOf2(T x) {
   int exponent;
   const T maintissa = std::frexp(x, &exponent);
   return maintissa == T(0.5);

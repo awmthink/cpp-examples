@@ -1,9 +1,15 @@
 #include <iostream>
 #include <string_view>
 
+#if !defined(__PRETTY_FUNCTION__) && !defined(__GNUC__)
+#define __PRETTY_FUNCTION__ __FUNCSIG__
+#endif
+
 template <typename T>
 constexpr auto GetTypeName() {
-  constexpr auto prefix = std::string_view{"[with T = "};
+  // gcc环境下的为：constexpr auto GetTypeName() [with T = const int &]
+  // msvc环境下的为：auto GetTypeName() [T = const int &]
+  constexpr auto prefix = std::string_view{"T = "};
   constexpr auto suffix = "]";
   constexpr auto function = std::string_view{__PRETTY_FUNCTION__};
 
